@@ -8,3 +8,4 @@ Route::get('/', function () {
 });
 
 Route::get('q1',[ReportController::class,'getQ1Report']);
+Route::get('q2',[ReportController::class,'getQ2Report']);
