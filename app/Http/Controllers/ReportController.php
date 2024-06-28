@@ -14,13 +14,22 @@ class ReportController extends Controller
     public function __construct(public ReportService $reportService) { }
 
     public function getQ1Report(){
-       $reportData = $this->reportService->getQ1Report();
-       return view('report.q1', compact('reportData'));
+        try {
+            $reportData = $this->reportService->getQ1Report();
+            return view('report.q1', compact('reportData'));
+        }catch (\Exception $exception){
+            return redirect()->back()->withErrors([$exception->getMessage()]);
+        }
+
    }
 
     public function getQ2Report(){
-        $reportData = $this->reportService->getQ2Report();
+        try {
+        $reportData = $this->reportService->getQ2Report(1);
         return view('report.q2', compact('reportData'));
+        }catch (\Exception $exception){
+            return redirect()->back()->withErrors([$exception->getMessage()]);
+        }
     }
 
 }

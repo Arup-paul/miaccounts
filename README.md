@@ -13,10 +13,11 @@ Implement a  MiAccount
 
 ## Install Backend
 
-- cd into the project directory `cd miaccounts`
+- Navigate to the Project Directory `cd miaccounts`
 - Install the Composer dependencies `composer install`
 - Set Up .env File `cp .env.example .env`
 - Generate an application key: `php artisan key:generate`
+- Clear Cache: `php artisan optimize:clear`
 - Configure Database
 - `DB_CONNECTION=mysql
   DB_HOST=127.0.0.1
@@ -26,16 +27,20 @@ Implement a  MiAccount
   DB_PASSWORD=your_database_password`
 
 -   Run Migrations `php artisan migrate`
+-   Generate Sample Data `php artisan db:seed`
 -   Start the Development Server `php artisan serve`
+
 
 
  ## End Point 
 
 [//]: # ( example host url  = http://127.0.0.1:8000      )
 
-Q1.   http://127.0.0.1:8000/q1-report
+Q1 Report.
+-   Access the Q1 report endpoint:  http://127.0.0.1:8000/q1-report
 
-Q2.   http://127.0.0.1:8000/q2-report
+Q2 Report. 
+-  Access the Q2 report endpoint:  http://127.0.0.1:8000/q2-report
 
 
 

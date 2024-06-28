@@ -9,17 +9,18 @@ class ReportService
 {
    public function getQ1Report()
    {
-       $groups = Group::with([
-           'children.children.accountHeads.transactions',
+         $groups = Group::with([
            'accountHeads.transactions',
            'children.accountHeads.transactions'
        ])
            ->whereNull('parent_id')
            ->get();
 
-      return  $reportData = $groups->map(function($group) {
+        $reportData = $groups->map(function($group) {
            return $this->processGroup($group);
        });
+
+        return $reportData;
    }
 
 
@@ -32,7 +33,6 @@ class ReportService
         ];
 
         //recursively
-
         foreach ($group->children as $childGroup) {
             $childGroupData = $this->processGroup($childGroup);
             $groupData['total_amount'] += $childGroupData['total_amount'];
@@ -51,9 +51,6 @@ class ReportService
                 'total_amount' => $totalAmount
             ];
         }
-
-
-
         return $groupData;
     }
 
@@ -69,9 +66,7 @@ class ReportService
         $reportData = [];
         foreach ($accountHeads as $accountHead) {
             $levels = $this->getGroupLevels($accountHead->group);
-            $totalAmount = $accountHead->transactions->sum(function ($transaction) {
-                return $transaction->debit - $transaction->credit;
-            });
+            $totalAmount = $accountHead->transactions->sum(fn($transaction) => $transaction->debit - $transaction->credit);
 
             $reportData[] = [
                 'acc_head_id' => $accountHead->id,
@@ -82,9 +77,8 @@ class ReportService
                 'total' => $totalAmount
             ];
         }
-        usort($reportData, function ($a, $b) {
-            return strcmp($a['lvl1'], $b['lvl1']);
-        });
+        usort($reportData, fn($a, $b) => strcmp($a['lvl1'], $b['lvl1']));
+
 
         return $reportData;
 
