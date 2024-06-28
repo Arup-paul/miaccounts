@@ -10,13 +10,13 @@ class Group extends Model
      protected $guarded = [];
 
      public function parent(){
-         return $this->belongsTo(self::class);
+         return $this->belongsTo(Group::class,'parent_id');
      }
      public function children(){
-         return $this->hasMany(self::class);
+         return $this->hasMany(Group::class,'parent_id');
      }
 
-     public function accountHead()
+     public function accountHeads()
      {
          return $this->hasMany(AccountHead::class);
      }

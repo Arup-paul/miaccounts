@@ -18,4 +18,6 @@ class AccountHead extends Model
         return $this->hasMany(Transaction::class);
     }
 
+
+
 }

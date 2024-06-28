@@ -33,22 +33,22 @@ class DatabaseSeeder extends Seeder
             ['id' => 5, 'name' => 'Account Head 5', 'group_id' => 1],
             ['id' => 6, 'name' => 'Account Head 6', 'group_id' => 6],
             ['id' => 7, 'name' => 'Account Head 7', 'group_id' => 6],
-            ['id' => 8, 'name' => 'Account Head 8', 'group_id' => 5],
+            ['id' => 8, 'name' => 'Account Head 8', 'group_id' => 4],
         ]);
 
 
         Transaction::insert([
             ['account_head_id' => 1, 'date' => now()->format('Y-m-d'),'credit' => 0,'debit' => 35],
             ['account_head_id' => 1, 'date' => now()->format('Y-m-d'),'credit' => 15,'debit' => 0],
-            ['account_head_id' => 2, 'date' => now()->format('Y-m-d'),'credit' => 30,'debit' => 0],
-            ['account_head_id' => 2, 'date' => now()->format('Y-m-d'),'credit' => 30,'debit' => 50],
+            ['account_head_id' => 2, 'date' => now()->format('Y-m-d'),'credit' => 35,'debit' => 0],
+            ['account_head_id' => 2, 'date' => now()->format('Y-m-d'),'credit' => 0,'debit' => 50],
             ['account_head_id' => 3, 'date' => now()->format('Y-m-d'),'credit' => 0,'debit' => 40],
             ['account_head_id' => 4, 'date' => now()->format('Y-m-d'),'credit' => 0,'debit' => 40],
             ['account_head_id' => 4, 'date' => now()->format('Y-m-d'),'credit' => 10,'debit' => 0],
-            ['account_head_id' => 5, 'date' => now()->format('Y-m-d'),'credit' => 20,'debit' => 50],
+            ['account_head_id' => 5, 'date' => now()->format('Y-m-d'),'credit' => 30,'debit' => 50],
             ['account_head_id' => 6, 'date' => now()->format('Y-m-d'),'credit' => 50,'debit' => 55],
             ['account_head_id' => 7, 'date' => now()->format('Y-m-d'),'credit' => 0,'debit' => 10],
-            ['account_head_id' => 8, 'date' => now()->format('Y-m-d'),'credit' => 0,'debit' => 35],
+            ['account_head_id' => 8, 'date' => now()->format('Y-m-d'),'credit' => 0,'debit' => 65],
             ['account_head_id' => 8, 'date' => now()->format('Y-m-d'),'credit' => 50,'debit' => 0],
         ]);
 
