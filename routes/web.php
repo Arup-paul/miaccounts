@@ -7,5 +7,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('q1',[ReportController::class,'getQ1Report']);
-Route::get('q2',[ReportController::class,'getQ2Report']);
+Route::get('q1-report',[ReportController::class,'getQ1Report'])->name('q1-report');
+Route::get('q2-report',[ReportController::class,'getQ2Report'])->name('q2-report');
