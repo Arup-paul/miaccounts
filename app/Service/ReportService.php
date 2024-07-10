@@ -4,23 +4,32 @@ namespace App\Service;
 
 use App\Models\AccountHead;
 use App\Models\Group;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
    public function getQ1Report()
    {
-         $groups = Group::with([
-           'accountHeads.transactions',
-           'children.accountHeads.transactions'
+       $accountSubQuery = function ($query) {
+           $query->select(['account_heads.*'])
+               ->leftJoin('transactions', 'account_heads.id', '=', 'transactions.account_head_id')
+               ->selectRaw('account_heads.*, SUM(transactions.debit - transactions.credit) AS total_amount')
+               ->groupBy('account_heads.id');
+       };
+       $groups = Group::with([
+           'accountHeads' => $accountSubQuery,
+           'children.accountHeads' => $accountSubQuery,
+           'children.children.accountHeads' => $accountSubQuery,
        ])
            ->whereNull('parent_id')
-           ->get();
-
-        $reportData = $groups->map(function($group) {
-           return $this->processGroup($group);
-       });
-
-        return $reportData;
+            ->chunk(100, function($groups) use (&$reportData) {
+               foreach ($groups as $group) {
+                   $reportData[] = $this->processGroup($group);
+               }
+           });
+       return $reportData;
    }
 
 
@@ -39,18 +48,16 @@ class ReportService
             $groupData['children'][] = $childGroupData;
         }
 
-        //sum amount
         foreach ($group->accountHeads as $accountHead) {
-            $totalAmount = $accountHead->transactions->sum(function ($transaction) {
-                return $transaction->debit - $transaction->credit;
-            });
+            $totalAmount = $accountHead->total_amount ?? 0;
 
             $groupData['total_amount'] += $totalAmount;
             $groupData['children'][] = [
                 'name' => $accountHead->name,
-                'total_amount' => $totalAmount
+                'total_amount' => $totalAmount,
             ];
         }
+
         return $groupData;
     }
 
@@ -58,28 +65,29 @@ class ReportService
 
     public function getQ2Report()
     {
-        $accountHeads = AccountHead::with([
-            'transactions',
-            'group.parent.parent'
-        ])->get();
-
         $reportData = [];
-        foreach ($accountHeads as $accountHead) {
-            $levels = $this->getGroupLevels($accountHead->group);
-            $totalAmount = $accountHead->transactions->sum(fn($transaction) => $transaction->debit - $transaction->credit);
+        $accountHeads = AccountHead::with(['group.parent.parent'])
+            ->leftJoin('transactions', 'account_heads.id', '=', 'transactions.account_head_id')
+            ->selectRaw('account_heads.*, SUM(transactions.debit - transactions.credit) AS total_amount')
+            ->groupBy('account_heads.id')
+            ->chunk(5000, function($accountHeads) use (&$reportData) {
+                foreach ($accountHeads as $accountHead) {
+                    $levels = $this->getGroupLevels($accountHead->group);
+                    $reportData[] = [
+                        'acc_head_id' => $accountHead->id,
+                        'lvl1' => $levels[0] ?? '',
+                        'lvl2' => $levels[1] ?? '',
+                        'lvl3' => $levels[2] ?? '',
+                        'acc_head' => $accountHead->name,
+                        'total' => $accountHead->total_amount
+                    ];
+                }
+            });
 
-            $reportData[] = [
-                'acc_head_id' => $accountHead->id,
-                'lvl1' => $levels[0] ?? '',
-                'lvl2' => $levels[1] ?? '',
-                'lvl3' => $levels[2] ?? '',
-                'acc_head' => $accountHead->name,
-                'total' => $totalAmount
-            ];
-        }
-        usort($reportData, fn($a, $b) => strcmp($a['lvl1'], $b['lvl1']));
 
-
+        usort($reportData, function ($a, $b) {
+            return strcmp($a['lvl1'], $b['lvl1']);
+        });
         return $reportData;
 
     }
