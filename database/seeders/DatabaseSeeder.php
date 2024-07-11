@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
 //            ['id' => 8, 'name' => 'Account Head 8', 'group_id' => 4],
 //        ]);
 
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             AccountHead::insert([
                 ['name' => 'Account Head ' . $i+1, 'group_id' => rand(1, 10)],
             ]);
@@ -64,11 +64,28 @@ class DatabaseSeeder extends Seeder
 //            ['account_head_id' => 8, 'date' => now()->format('Y-m-d'),'credit' => 50,'debit' => 0],
 //        ]);
 
-        for ($i = 0; $i <= 10000; $i++){
-            Transaction::insert([
-                'account_head_id' => rand(1,100),'date' => now()->format('Y-m-d'),'credit' => rand(100,200),'debit' => rand(200,300)
-            ]);
+        $dataChunkSize = 10000;
+
+        $data = [];
+        for ($i = 0; $i <= 1000000; $i++) {
+            $data[] = [
+                'account_head_id' => rand(1, 20),
+                'date' => now()->format('Y-m-d'),
+                'credit' => rand(100, 200),
+                'debit' => rand(200, 300),
+            ];
+
+            if (count($data) >= $dataChunkSize) {
+                Transaction::insert($data);
+                $data = [];
+            }
         }
+
+        if (!empty($data)) {
+            Transaction::insert($data);
+        }
+
+
 
 
 
